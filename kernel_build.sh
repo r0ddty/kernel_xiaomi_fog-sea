@@ -29,10 +29,27 @@ fi
 # Set variable
 export KBUILD_BUILD_USER=rootd
 export KBUILD_BUILD_HOST=cutiepatootie
-\
+
 # Build
+
 # Prepare
-make -j$(nproc --all) O=out ARCH=arm64 CC=$(pwd)/clang-llvm/bin/clang CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu- LLVM_IAS=1 vendor/fog-perf_defconfig
+read -p "Would you like to configure the kernel with nconfig? " yn
+tput bel
+case $yn in
+    [yY] )
+	echo "Starting nconfig...";
+        make -j$(nproc --all) O=out ARCH=arm64 CC=$(pwd)/clang-llvm/bin/clang CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu- LLVM_IAS=1 vendor/fog-perf_defconfig nconfig
+    ;;
+
+    [nN] )
+    	echo "Proceeding without menuconfig..."
+    ;;
+
+    * )
+    	echo "invalid response"
+    ;;
+esac
+
 # Execute
 if make -j$(nproc --all) O=out ARCH=arm64 CC=$(pwd)/clang-llvm/bin/clang CROSS_COMPILE=aarch64-linux-gnu- CLANG_TRIPLE=aarch64-linux-gnu- LLVM_IAS=1
 then
@@ -81,5 +98,5 @@ esac
 
 rm -rf AnyKernel3/
 echo -e "${GREEN}Build finished${NC}"
-echo -e "File: ${PURPLE}$(pwd)/$KERNNAME-$KERNVER-$BUILDDATE.zip${NC}"
+echo -e "File: ${PURPLE}$(pwd)/output/$KERNNAME-$KERNVER-$BUILDDATE.zip${NC}"
 
